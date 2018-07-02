@@ -11,14 +11,14 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:dart-import.fix"
     ],
     "main": "./out/extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "dart-import.fix",
+                "title": "Fix imports"
             }
         ]
     },
