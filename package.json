@@ -18,7 +18,7 @@
         "commands": [
             {
                 "command": "dart-import.fix",
-                "title": "Fix imports"
+                "title": "Fix Imports"
             }
         ]
     },
