@@ -4,6 +4,7 @@
     "description": "Fix Dart/Flutter's imports",
     "version": "0.0.1",
     "publisher": "luanpotter",
+    "repository": "https://github.com/luanpotter/vscode-dart-import",
     "engines": {
         "vscode": "^1.24.0"
     },
