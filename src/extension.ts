@@ -58,12 +58,12 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
     const currentPath = editor.document.fileName.replace(/\/[^\/]*.dart$/, '');
-        const libFolder = packageInfo.projectRoot + '/lib/';
+        const libFolder = packageInfo.projectRoot + '/lib';
         if (!currentPath.startsWith(libFolder)) {
             vscode.window.showErrorMessage('Current file is not on project root or not on lib folder? File must be on $root/lib.');
             return;
         }
-        const relativePath = currentPath.substring(libFolder.length);
+        const relativePath = currentPath.substring(libFolder.length + 1);
         let count = 0;
         for (let currentLine = 0;; currentLine++) {
             const line : vscode.TextLine = editor.document.lineAt(currentLine);
