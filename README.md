@@ -10,6 +10,10 @@ The only command added (so far) is "dart-import.fix"; you can bind it as desired
 
 ## Release Notes
 
+### 0.1.1
+
+Fix regex, update deps
+
 ### 0.1.0
 
 Bug fixes

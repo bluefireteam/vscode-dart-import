@@ -10,20 +10,20 @@ const fetchPackageName = async (context: vscode.ExtensionContext) => {
     }
     const file : vscode.TextDocument = await vscode.workspace.openTextDocument(files[0]);
     const fileName = file.fileName.replace(/\/pubspec\.yaml$/, '');
-    const possibleNameLines = file.getText().split('\n').filter(line => line.match(/^\s*name:/));
+    const possibleNameLines = file.getText().split('\n').filter((line: String) => line.match(/^\s*name:/));
     if (possibleNameLines.length != 1) {
         vscode.window.showErrorMessage(`Expected to find a single line starting with 'name:' on pubspec.yaml file, ${possibleNameLines.length} found.`);
         return null;
     }
     const nameLine = possibleNameLines[0];
-    const regex = /^\s*name:\s*(.*)$/.exec(nameLine);
+    const regex = /^\s*name:\s*(.*)$/mg.exec(nameLine);
     if (!regex) {
         vscode.window.showErrorMessage(`Expected line 'name:' on pubspec.yaml to match regex, but it didn't (line: ${nameLine}).`);
         return null;
     }
     return {
         projectRoot: fileName,
-        projectName: regex[1],
+        projectName: regex[1].trim(),
     };
 };
 
