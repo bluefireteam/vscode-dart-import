@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.1.1] - 2019-02-11
+- Fix regex, also update deps.
+
 ## [0.1.0] - 2018-07-12
 - Fix for files directly in the lib/ folder.
 
