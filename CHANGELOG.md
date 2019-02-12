@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.1.2] - 2019-02-12
+- Better error messages.
+
 ## [0.1.1] - 2019-02-11
 - Fix regex, also update deps.
 

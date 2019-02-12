@@ -8,16 +8,16 @@ Run the command "Fix Imports" from the Command Palette; all imports from your ow
 
 The only command added (so far) is "dart-import.fix"; you can bind it as desired.
 
-## Release Notes
+## Contribute
 
-### 0.1.1
+Any help is appreciated! Comment, suggestions, issues, PR's! Give us a star to help!
 
-Fix regex, update deps
+## Setup
 
-### 0.1.0
+This is a regular vscode extension setup. You can use the scripts in the `package.json` file to test.
 
-Bug fixes
+To setup, run `npm i` to download dependencies.
 
-### 0.0.1
+Then, you can run `npm test` to run the tests, make sure they are passing.
 
-First version!
+To test in your machine, run `npm run build:vsix` to create a new VSIX file, and then use vscode's built in command `Extensions: Install from VSIX...` (from command palette) to load your version.
