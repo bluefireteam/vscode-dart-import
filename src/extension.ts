@@ -4,14 +4,14 @@ import * as vscode from 'vscode';
 
 const fetchPackageName = async (context: vscode.ExtensionContext) => {
     const files: vscode.Uri[] = await vscode.workspace.findFiles('pubspec.yaml');
-    if (files.length != 1) {
+    if (files.length !== 1) {
         vscode.window.showErrorMessage(`Expected to find a single pubspec.yaml file, ${files.length} found.`);
         return null;
     }
     const file : vscode.TextDocument = await vscode.workspace.openTextDocument(files[0]);
     const fileName = file.fileName.replace(/\/pubspec\.yaml$/, '');
     const possibleNameLines = file.getText().split('\n').filter((line: String) => line.match(/^\s*name:/));
-    if (possibleNameLines.length != 1) {
+    if (possibleNameLines.length !== 1) {
         vscode.window.showErrorMessage(`Expected to find a single line starting with 'name:' on pubspec.yaml file, ${possibleNameLines.length} found.`);
         return null;
     }
@@ -57,10 +57,12 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-    const currentPath = editor.document.fileName.replace(/\/[^\/]*.dart$/, '');
+        const currentPath = editor.document.fileName.replace(/\/[^\/]*.dart$/, '');
         const libFolder = packageInfo.projectRoot + '/lib';
         if (!currentPath.startsWith(libFolder)) {
-            vscode.window.showErrorMessage('Current file is not on project root or not on lib folder? File must be on $root/lib.');
+            const l1 = 'Current file is not on project root or not on lib folder? File must be on $root/lib.';
+            const l2 = `Your current file path is: '${currentPath}' and the lib folder according to the pubspec.yaml file is '${libFolder}'.`;
+            vscode.window.showErrorMessage(`${l1}\n${l2}`);
             return;
         }
         const relativePath = currentPath.substring(libFolder.length + 1);
