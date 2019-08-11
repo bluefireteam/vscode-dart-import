@@ -2,6 +2,8 @@
 
 A simple plugin for VSCode to change all Dart/Flutter imports to relative format.
 
+Find it on the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=luanpotter.dart-import).
+
 ## Features
 
 Run the command "Fix Imports" from the Command Palette; all imports from your own package will become relative. Also, the "Organize Import" command will be called.
