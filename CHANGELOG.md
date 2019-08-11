@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.3] - 2019-08-11
+- Allowed for fixing imports in multi-project workspaces (thanks, @shyndman)
+- Updating dependencies
+
 ## [0.1.2] - 2019-02-12
 - Better error messages.
 
