@@ -29,4 +29,11 @@ suite('#relativize test', function () {
         const result = relativize(filePath, importPath);
         assert.equal('../../sam/tom.dart', result);
     });
+
+    test('Windows - some up', function() {
+        const filePath = 'foo\\bar\\john\\carl';
+        const importPath = 'foo/bar/sam/tom.dart';
+        const result = relativize(filePath, importPath);
+        assert.equal('../../sam/tom.dart', result);
+    });
 });
