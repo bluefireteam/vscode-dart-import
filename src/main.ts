@@ -47,13 +47,14 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
         if (!content.startsWith('import ')) {
             break;
         }
-        const regex = new RegExp(`^\\s*import\\s*(['"])package:${packageInfo.projectName}/([^'"]*)['"]\\s*;\\s*$`);
+        const regex = new RegExp(`^\\s*import\\s*(['"])package:${packageInfo.projectName}/([^'"]*)['"]([^;]*);\\s*$`);
         const exec = regex.exec(content);
         if (exec) {
             const quote = exec[1];
             const importPath = exec[2];
+            const ending = exec[3];
             const relativeImport = relativize(relativePath, importPath, pathSep);
-            const content = `import ${quote}${relativeImport}${quote};`;
+            const content = `import ${quote}${relativeImport}${quote}${ending};`;
             await editor.replaceLineAt(currentLine, content);
             count++;
         }
