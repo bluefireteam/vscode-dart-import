@@ -46,7 +46,15 @@ const findPubspec = async (activeFileUri: vscode.Uri) => {
 }
 
 export const relativize = (filePath : String, importPath : String) => {
-    const pathSplit = (path : String) => path.length === 0 ? [] : path.split('/');
+    const pathSplit = (_path : String) => {
+        if (_path.length === 0) return [];
+        const slash = _path.split('/');
+
+        // Handles OS specific paths (Windows related)
+        const osSeparator = _path.split(path.sep);
+        if (slash.length > osSeparator.length) return slash;
+        else return osSeparator;
+    }
     const fileBits = pathSplit(filePath);
     const importBits = pathSplit(importPath);
     let dotdotAmount = 0, startIdx;
@@ -74,8 +82,8 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const currentPath = editor.document.fileName.replace(/\/[^\/]*.dart$/, '');
-        const libFolder = packageInfo.projectRoot + '/lib';
+        const currentPath = editor.document.fileName.replace(/(\/|\\)[^\/\\]*.dart$/, '');
+        const libFolder = path.join(packageInfo.projectRoot, 'lib');
         if (!currentPath.startsWith(libFolder)) {
             const l1 = 'Current file is not on project root or not on lib folder? File must be on $root/lib.';
             const l2 = `Your current file path is: '${currentPath}' and the lib folder according to the pubspec.yaml file is '${libFolder}'.`;
