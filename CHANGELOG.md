@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.4] - 2019-10-27
+- Allows this to work on both unix and windows systems (thanks, @ElZombieIsra)
+- Updating dependencies
+
 ## [0.1.3] - 2019-08-11
 - Allowed for fixing imports in multi-project workspaces (thanks, @shyndman)
 - Updating dependencies
