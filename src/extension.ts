@@ -45,18 +45,11 @@ const findPubspec = async (activeFileUri: vscode.Uri) => {
     });
 }
 
-export const relativize = (filePath : String, importPath : String) => {
-    const pathSplit = (_path : String) => {
-        if (_path.length === 0) return [];
-        const slash = _path.split('/');
-
-        // Handles OS specific paths (Windows related)
-        const osSeparator = _path.split(path.sep);
-        if (slash.length > osSeparator.length) return slash;
-        else return osSeparator;
-    }
-    const fileBits = pathSplit(filePath);
-    const importBits = pathSplit(importPath);
+export const relativize = (filePath : string, importPath : string, pathSep : string) => {
+    const dartSep = '/'; // dart uses this separator for imports no matter the platform
+    const pathSplit = (path : String, sep : string) => path.length === 0 ? [] : path.split(sep);
+    const fileBits = pathSplit(filePath, pathSep);
+    const importBits = pathSplit(importPath, dartSep);
     let dotdotAmount = 0, startIdx;
     for (startIdx = 0; startIdx < fileBits.length; startIdx++) {
         if (fileBits[startIdx] === importBits[startIdx]) {
@@ -66,7 +59,7 @@ export const relativize = (filePath : String, importPath : String) => {
         break;
     }
     const relativeBits = new Array(dotdotAmount).fill('..').concat(importBits.slice(startIdx));
-    return relativeBits.join('/');
+    return relativeBits.join(dartSep);
 };
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -106,7 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (exec) {
                 const quote = exec[1];
                 const importPath = exec[2];
-                const relativeImport = relativize(relativePath, importPath);
+                const relativeImport = relativize(relativePath, importPath, path.sep);
                 const content = `import ${quote}${relativeImport}${quote};`;
                 await editor.edit((builder) => {
                     const start = new vscode.Position(currentLine, 0);
