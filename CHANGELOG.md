@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.5] - 2019-10-27
+- Refactored code to make 100% of the logic testable and decoupled with vscode code (main.ts file vs extension.ts file)
+- Added support for import aliases (as, show, hide)
+
 ## [0.1.4] - 2019-10-27
 - Allows this to work on both unix and windows systems (thanks, @ElZombieIsra)
 - Updating dependencies
