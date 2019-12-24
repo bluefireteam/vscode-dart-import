@@ -9,7 +9,7 @@ import { PackageInfo, EditorAccess, fixImports } from './main';
  * directory ancestry.
  */
 const findPubspec = async (activeFileUri: vscode.Uri) => {
-    const allPubspecUris = await vscode.workspace.findFiles('pubspec.yaml');
+    const allPubspecUris = await vscode.workspace.findFiles('**/pubspec.yaml');
     return allPubspecUris.filter((pubspecUri) => {
         const packageRootUri = pubspecUri.with({
             path: path.dirname(pubspecUri.path),
