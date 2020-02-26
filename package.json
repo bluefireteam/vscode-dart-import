@@ -2,7 +2,7 @@
     "name": "dart-import",
     "displayName": "dart-import",
     "description": "Fix Dart/Flutter's imports",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "publisher": "luanpotter",
     "repository": "https://github.com/luanpotter/vscode-dart-import",
     "engines": {

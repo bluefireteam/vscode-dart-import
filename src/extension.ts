@@ -13,7 +13,7 @@ const findPubspec = async (activeFileUri: vscode.Uri) => {
     return allPubspecUris.filter((pubspecUri) => {
         const packageRootUri = pubspecUri.with({
             path: path.dirname(pubspecUri.path),
-        });
+        }) + '/';
 
         // Containment check
         return activeFileUri.toString().startsWith(packageRootUri.toString());
