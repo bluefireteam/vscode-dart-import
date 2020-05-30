@@ -27,6 +27,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "package": "vsce package",
+        "publish": "vsce publish",
         "lint": "eslint . --ext .ts,.tsx",
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile",
