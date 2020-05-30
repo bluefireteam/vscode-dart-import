@@ -1,0 +1,16 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Using Node 14.3.0
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.3.0
+      - run: npm install
+      - run: ./cmds/ci.sh
