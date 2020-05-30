@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { fixImports, EditorAccess, PackageInfo } from '../main';
+import { fixImports, EditorAccess, PackageInfo } from '../../main';
 
 class FakeEditor implements EditorAccess {
     fileName: string;

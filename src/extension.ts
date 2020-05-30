@@ -29,7 +29,7 @@ const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<Packa
 
     const pubspec: vscode.TextDocument = await vscode.workspace.openTextDocument(pubspecUris[0]);
     const projectRoot = path.dirname(pubspec.fileName);
-    const possibleNameLines = pubspec.getText().split('\n').filter((line: String) => line.match(/^name:/));
+    const possibleNameLines = pubspec.getText().split('\n').filter((line: string) => line.match(/^name:/));
     if (possibleNameLines.length !== 1) {
         vscode.window.showErrorMessage(`Expected to find a single line starting with 'name:' on pubspec.yaml file, ${possibleNameLines.length} found.`);
         return null;
@@ -75,7 +75,7 @@ class VSCodeEditorAccess implements EditorAccess {
     }
 }
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     const cmd = vscode.commands.registerCommand('dart-import.fix', async () => {
         const rawEditor = vscode.window.activeTextEditor;
         if (!rawEditor) {

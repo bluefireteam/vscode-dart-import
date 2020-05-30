@@ -5,7 +5,7 @@ interface PackageInfo {
 
 const relativize = (filePath: string, importPath: string, pathSep: string) => {
     const dartSep = '/'; // dart uses this separator for imports no matter the platform
-    const pathSplit = (path: String, sep: string) => path.length === 0 ? [] : path.split(sep);
+    const pathSplit = (path: string, sep: string) => path.length === 0 ? [] : path.split(sep);
     const fileBits = pathSplit(filePath, pathSep);
     const importBits = pathSplit(importPath, dartSep);
     let dotdotAmount = 0, startIdx;
@@ -28,7 +28,7 @@ interface EditorAccess {
 }
 
 const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSep: string): Promise<number> => {
-    const currentPath = editor.getFileName().replace(/(\/|\\)[^\/\\]*.dart$/, '');
+    const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
     const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
     if (!currentPath.startsWith(libFolder)) {
         const l1 = 'Current file is not on project root or not on lib folder? File must be on $root/lib.';
