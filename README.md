@@ -25,4 +25,4 @@ To setup, run `npm i` to download dependencies.
 
 Then, you can run `npm test` to run the tests, make sure they are passing.
 
-To test in your machine, run `npm run build:vsix` to create a new VSIX file, and then use vscode's built in command `Extensions: Install from VSIX...` (from command palette) to load your version.
+To test in your machine, run `npm run package` to create a new VSIX file, and then use vscode's built in command `Extensions: Install from VSIX...` (from command palette) to load your version.
