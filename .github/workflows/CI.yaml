@@ -4,7 +4,10 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v1
@@ -13,4 +16,7 @@ jobs:
         with:
           node-version: 14.3.0
       - run: npm install
-      - run: ./cmds/ci.sh
+      - name: Run Tests
+        uses: GabrielBB/xvfb-action@v1.2
+        with:
+          run: ./cmds/ci.sh
