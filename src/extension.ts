@@ -101,5 +101,38 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
             }
         }
     });
-    context.subscriptions.push(cmd);
+    const cmdAll = vscode.commands.registerCommand('dart-import.fix-all', async () => {
+        const filesUris = await vscode.workspace.findFiles('lib/**/**.dart', 'lib/**/**.g.dart');
+
+        if (filesUris.length === 0) {
+            vscode.window.showInformationMessage('No dart files were found');
+            return;
+        }
+        const packageInfo = await fetchPackageInfoFor(filesUris[0]);
+
+        if (!packageInfo) {
+            vscode.window.showErrorMessage('Failed to initialize extension. Is this a valid Dart/Flutter project?');
+            return;
+        }
+
+        let totalCount = 0;
+        for await  (const uri of filesUris) {
+            const document = await vscode.workspace.openTextDocument(uri);
+            const rawEditor = await vscode.window.showTextDocument(document);
+            const editor = new VSCodeEditorAccess(rawEditor);
+            try {
+                const count = await fixImports(editor, packageInfo, path.sep);
+                vscode.commands.executeCommand('editor.action.organizeImports');
+                totalCount += count;
+            } catch (ex) {
+                if (ex instanceof Error) {
+                    vscode.window.showErrorMessage(ex.message);
+                } else {
+                    throw ex;
+                }
+            }
+        }
+        vscode.window.showInformationMessage(totalCount === 0 ? 'Done. No lines changed' : `All done. ${totalCount} lines changed.`);
+    });
+    context.subscriptions.push(cmd, cmdAll);
 }
