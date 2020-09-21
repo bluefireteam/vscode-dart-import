@@ -12,7 +12,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:dart-import.fix"
+        "onCommand:dart-import.fix",
+        "onCommand:dart-import.fix-all"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -20,6 +21,10 @@
             {
                 "command": "dart-import.fix",
                 "title": "Fix Imports"
+            }, 
+            {
+                "command": "dart-import.fix-all",
+                "title": "Fix All Imports"
             }
         ]
     },
