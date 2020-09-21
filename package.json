@@ -21,7 +21,7 @@
             {
                 "command": "dart-import.fix",
                 "title": "Fix Imports"
-            }, 
+            },
             {
                 "command": "dart-import.fix-all",
                 "title": "Fix All Imports"
