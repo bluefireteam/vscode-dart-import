@@ -26,3 +26,5 @@ To setup, run `npm i` to download dependencies.
 Then, you can run `npm test` to run the tests, make sure they are passing.
 
 To test in your machine, run `npm run package` to create a new VSIX file, and then use vscode's built in command `Extensions: Install from VSIX...` (from command palette) to load your version.
+
+In order to deploy, run `npm run deploy`. If your PAT token is expired, go to [this page](https://your_username.visualstudio.com/_usersSettings/tokens) to get a new one.
