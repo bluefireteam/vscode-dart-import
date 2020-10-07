@@ -5,14 +5,16 @@ import * as path from 'path';
 import { PackageInfo, EditorAccess, fixImports } from './main';
 import { ConfigResolver } from './configResolver';
 
+let configResolver = new ConfigResolver();
+
 const showErrorMessage = (message: string) => {
-    if (new ConfigResolver().showErrorMessages) {
+    if (configResolver.showErrorMessages) {
         vscode.window.showErrorMessage(message);
     }
 };
 
 const showInfoMessage = (message: string) => {
-    if (new ConfigResolver().showInfoMessages) {
+    if (configResolver.showInfoMessages) {
         vscode.window.showInformationMessage(message);
     }
 };
@@ -65,6 +67,32 @@ const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<Packa
     };
 };
 
+const runFixImportTask = async (rawEditor: vscode.TextEditor) => {
+    const packageInfo = await fetchPackageInfoFor(rawEditor.document.uri);
+    if (!packageInfo) {
+        showErrorMessage(
+            'Failed to initialize extension. Is this a valid Dart/Flutter project?',
+        );
+        return;
+    }
+
+    const editor = new VSCodeEditorAccess(rawEditor);
+    try {
+        const count = await fixImports(editor, packageInfo, path.sep);
+        vscode.commands.executeCommand('editor.action.organizeImports');
+        showInfoMessage(
+            (count === 0 ? 'No lines changed.' : `${count} imports fixed.`) +
+            ' All imports sorted.',
+        );
+    } catch (ex) {
+        if (ex instanceof Error) {
+            showErrorMessage(ex.message);
+        } else {
+            throw ex;
+        }
+    }
+};
+
 class VSCodeEditorAccess implements EditorAccess {
     editor: vscode.TextEditor;
 
@@ -95,38 +123,33 @@ class VSCodeEditorAccess implements EditorAccess {
 }
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
+    const configChanges = vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration('dartImport')) {
+            configResolver = new ConfigResolver();
+        }
+    });
+
+    const documentSave = vscode.workspace.onDidSaveTextDocument(
+        async (e: vscode.TextDocument) => {
+            if (!configResolver.fixOnSave) {
+                return;
+            }
+            const rawEditor = await vscode.window.showTextDocument(e);
+
+            runFixImportTask(rawEditor);
+        },
+    );
+
     const cmd = vscode.commands.registerCommand('dart-import.fix', async () => {
         const rawEditor = vscode.window.activeTextEditor;
         if (!rawEditor) {
             return; // No open text editor
         }
 
-        const packageInfo = await fetchPackageInfoFor(rawEditor.document.uri);
-        if (!packageInfo) {
-            showErrorMessage(
-                'Failed to initialize extension. Is this a valid Dart/Flutter project?',
-            );
-            return;
-        }
-
-        const editor = new VSCodeEditorAccess(rawEditor);
-        try {
-            const count = await fixImports(editor, packageInfo, path.sep);
-            vscode.commands.executeCommand('editor.action.organizeImports');
-            showInfoMessage(
-                (count === 0 ? 'No lines changed.' : `${count} imports fixed.`) +
-                ' All imports sorted.',
-            );
-        } catch (ex) {
-            if (ex instanceof Error) {
-                showErrorMessage(ex.message);
-            } else {
-                throw ex;
-            }
-        }
+        runFixImportTask(rawEditor);
     });
     const cmdAll = vscode.commands.registerCommand('dart-import.fix-all', async () => {
-        const excludeExt = new ConfigResolver().excludeGeneratedFiles;
+        const excludeExt = configResolver.excludeGeneratedFiles;
         const excludeFiles = excludeExt ? `lib/**/*.{${excludeExt}}` : null;
         const filesUris = await vscode.workspace.findFiles('lib/**/**.dart', excludeFiles);
 
@@ -166,5 +189,5 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                 : `All done. ${totalCount} lines changed.`,
         );
     });
-    context.subscriptions.push(cmd, cmdAll);
+    context.subscriptions.push(cmd, cmdAll, configChanges, documentSave);
 }

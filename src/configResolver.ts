@@ -4,6 +4,7 @@ export class ConfigResolver {
     private _showInfoMessages: boolean;
     private _showErrorMessages: boolean;
     private _excludeGeneratedFiles: Array<string>;
+    private _fixOnSave: boolean;
 
     constructor() {
         const config = vscode.workspace.getConfiguration(
@@ -13,6 +14,7 @@ export class ConfigResolver {
         this._showInfoMessages = !!config.get('showInfoMessages');
         this._showErrorMessages = !!config.get('showErrorMessages');
         this._excludeGeneratedFiles = config.get('excludeGeneratedFiles') || [];
+        this._fixOnSave = !!config.get('fixOnSave');
     }
 
     public get showErrorMessages() : boolean {
@@ -25,5 +27,9 @@ export class ConfigResolver {
 
     public get excludeGeneratedFiles() : Array<string> {
         return this._excludeGeneratedFiles;
+    }
+
+    public get fixOnSave() : boolean {
+        return this._fixOnSave;
     }
 }

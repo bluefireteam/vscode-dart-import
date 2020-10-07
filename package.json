@@ -48,6 +48,11 @@
                         "config.dart",
                         "freezed.dart"
                     ]
+                },
+                "dartImport.fixOnSave": {
+                    "type": "boolean",
+                    "description": "Auto fix dart imports on file save",
+                    "default": false
                 }
             }
         },
