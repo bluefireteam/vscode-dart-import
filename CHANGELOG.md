@@ -1,10 +1,10 @@
 # Change Log
 
-## [0.3.0] - 2020-10-11
+## [0.3.1] - 2020-10-11
 - Add config options for now showing messages and running on save
 - Standardizing `./` for relative imports
 
-## [0.2.0] - 2020-09-20
+## [0.3.0] - 2020-09-20
 - Add the option to fix all imports
 
 ## [0.1.6] - 2019-12-24
