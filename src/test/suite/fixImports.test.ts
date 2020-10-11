@@ -51,7 +51,7 @@ suite('#fixImports test', () => {
         assert.equal('import "package:other_package/sam.dart";', editor.getLineAt(5));
     });
 
-    test('allow for use of as, show hide', async () => {
+    test('allow for use of as, show, and hide', async () => {
         const editor: EditorAccess = new FakeEditor('/lib/foo/1.dart', [
             'import "package:p/foo/2.dart" as Foo;',
             'import "package:p/foo/2.dart" show Foo;',
@@ -63,5 +63,19 @@ suite('#fixImports test', () => {
         assert.equal('import "2.dart" as Foo;', editor.getLineAt(0));
         assert.equal('import "2.dart" show Foo;', editor.getLineAt(1));
         assert.equal('import "2.dart" hide Foo;', editor.getLineAt(2));
+    });
+
+    test('standardize relative imports', async () => {
+        const editor: EditorAccess = new FakeEditor('/lib/foo/1.dart', [
+            'import "no_dot.dart";',
+            'import "./with_dot.dart" show Foo;',
+            'import "../parent.dart";',
+        ]);
+        const packageInfo: PackageInfo = { projectRoot: '', projectName: 'p' };
+        const result: number = await fixImports(editor, packageInfo, '/');
+        assert.equal(1, result);
+        assert.equal('import "no_dot.dart";', editor.getLineAt(0));
+        assert.equal('import "with_dot.dart" show Foo;', editor.getLineAt(1));
+        assert.equal('import "../parent.dart";', editor.getLineAt(2));
     });
 });
