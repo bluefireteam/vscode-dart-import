@@ -17,6 +17,45 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "languages": [{
+            "id": "dart",
+            "extensions": [
+                ".dart"
+            ],
+            "aliases": [ "Dart", "dart" ]
+        }],
+        "configuration": {
+            "title": "Dart Import configuration",
+            "properties": {
+                "dartImport.showErrorMessages": {
+                    "type": "boolean",
+                    "description": "Whether you want to see errors after dart-import task failure",
+                    "default": true
+                },
+                "dartImport.showInfoMessages": {
+                    "type": "boolean",
+                    "description": "Whether you want to see notification after dart-import task completion",
+                    "default": true
+                },
+                "dartImport.excludeGeneratedFiles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of generated file extensions to exclude",
+                    "default": [
+                        "g.dart",
+                        "config.dart",
+                        "freezed.dart"
+                    ]
+                },
+                "dartImport.fixOnSave": {
+                    "type": "boolean",
+                    "description": "Auto fix dart imports on file save",
+                    "default": false
+                }
+            }
+        },
         "commands": [
             {
                 "command": "dart-import.fix",
