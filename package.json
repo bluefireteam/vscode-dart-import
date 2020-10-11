@@ -17,13 +17,18 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "languages": [{
-            "id": "dart",
-            "extensions": [
-                ".dart"
-            ],
-            "aliases": [ "Dart", "dart" ]
-        }],
+        "languages": [
+            {
+                "id": "dart",
+                "extensions": [
+                    ".dart"
+                ],
+                "aliases": [
+                    "Dart",
+                    "dart"
+                ]
+            }
+        ],
         "configuration": {
             "title": "Dart Import configuration",
             "properties": {
