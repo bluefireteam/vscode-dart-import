@@ -1,5 +1,12 @@
 # Change Log
 
+## [next]
+- Add config options for now showing messages and running on save
+- Standardizing `./` for relative imports
+
+## [0.2.0] - 2020-09-20
+- Add the option to fix all imports
+
 ## [0.1.6] - 2019-12-24
 - Allows for folders with multiple projects (thanks, @shroudedcode)
 
