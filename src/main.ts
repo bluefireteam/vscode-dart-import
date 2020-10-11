@@ -47,16 +47,26 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
         if (!content.startsWith('import ')) {
             break;
         }
-        const regex = new RegExp(`^\\s*import\\s*(['"])package:${packageInfo.projectName}/([^'"]*)['"]([^;]*);\\s*$`);
-        const exec = regex.exec(content);
-        if (exec) {
-            const quote = exec[1];
-            const importPath = exec[2];
-            const ending = exec[3];
+        const packageNameRegex = new RegExp(`^\\s*import\\s*(['"])package:${packageInfo.projectName}/([^'"]*)['"]([^;]*);\\s*$`);
+        const packageNameExec = packageNameRegex.exec(content);
+        if (packageNameExec) {
+            const quote = packageNameExec[1];
+            const importPath = packageNameExec[2];
+            const ending = packageNameExec[3];
             const relativeImport = relativize(relativePath, importPath, pathSep);
-            const content = `import ${quote}${relativeImport}${quote}${ending};`;
-            await editor.replaceLineAt(currentLine, content);
+            const newContent = `import ${quote}${relativeImport}${quote}${ending};`;
+            await editor.replaceLineAt(currentLine, newContent);
             count++;
+        } else {
+            const standardPrefixRegex = new RegExp('^\\s*import\\s*([\'"])\\./(.*)$');
+            const standardPrefixExec = standardPrefixRegex.exec(content);
+            if (standardPrefixExec) {
+                const quote = standardPrefixExec[1];
+                const end = standardPrefixExec[2];
+                const newContent = `import ${quote}${end}`;
+                await editor.replaceLineAt(currentLine, newContent);
+                count++;
+            }
         }
     }
     return count;
