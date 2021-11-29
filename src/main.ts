@@ -30,7 +30,8 @@ interface EditorAccess {
 const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSep: string): Promise<number> => {
     const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
     const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
-    if (!currentPath.startsWith(libFolder)) {
+    const testFolder = `${packageInfo.projectRoot}${pathSep}test`;
+    if (!currentPath.startsWith(libFolder) && !currentPath.startsWith(testFolder)) {
         const l1 = 'Current file is not on project root or not on lib folder? File must be on $root/lib.';
         const l2 = `Your current file path is: '${currentPath}' and the lib folder according to the pubspec.yaml file is '${libFolder}'.`;
         throw Error(`${l1}\n${l2}`);
