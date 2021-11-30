@@ -44,6 +44,9 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
             continue;
         }
         const content = line.trim();
+        if (content.startsWith('///')) {
+            continue;
+        }
         if (!content.startsWith('import ')) {
             break;
         }
