@@ -1,9 +1,9 @@
 'use strict';
 
-import * as vscode from 'vscode';
 import * as path from 'path';
-import { PackageInfo, EditorAccess, fixImports } from './main';
+import * as vscode from 'vscode';
 import { ConfigResolver } from './configResolver';
+import { EditorAccess, fixImports, PackageInfo } from './main';
 
 let configResolver = new ConfigResolver();
 
@@ -67,7 +67,7 @@ const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<Packa
     };
 };
 
-const runFixImportTask = async (rawEditor: vscode.TextEditor) => {
+const runFixImportTask = async (rawEditor: vscode.TextEditor, mode?: string) => {
     const packageInfo = await fetchPackageInfoFor(rawEditor.document.uri);
     if (!packageInfo) {
         showErrorMessage(
@@ -78,7 +78,7 @@ const runFixImportTask = async (rawEditor: vscode.TextEditor) => {
 
     const editor = new VSCodeEditorAccess(rawEditor);
     try {
-        const count = await fixImports(editor, packageInfo, path.sep);
+        const count = await fixImports(editor, packageInfo, path.sep, mode);
         vscode.commands.executeCommand('editor.action.organizeImports');
         showInfoMessage(
             (count === 0 ? 'No lines changed.' : `${count} imports fixed.`) +
@@ -140,7 +140,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         },
     );
 
-    const cmd = vscode.commands.registerCommand('dart-import.fix', async () => {
+    const changeToRelative = vscode.commands.registerCommand('dart-import.change-to-relative', async () => {
         const rawEditor = vscode.window.activeTextEditor;
         if (!rawEditor) {
             return; // No open text editor
@@ -148,7 +148,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
         runFixImportTask(rawEditor);
     });
-    const cmdAll = vscode.commands.registerCommand('dart-import.fix-all', async () => {
+
+
+    const changeAllToRelative = vscode.commands.registerCommand('dart-import.change-all-to-relative', async () => {
         const excludeExt = configResolver.excludeGeneratedFiles;
         const excludeFiles = excludeExt ? `lib/**/*.{${excludeExt}}` : null;
         const filesUris = await vscode.workspace.findFiles('lib/**/**.dart', excludeFiles);
@@ -189,5 +191,58 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
                 : `All done. ${totalCount} lines changed.`,
         );
     });
-    context.subscriptions.push(cmd, cmdAll, configChanges, documentSave);
+
+    const changeToAbsolute = vscode.commands.registerCommand('dart-import.change-to-absolute', async () => {
+        const rawEditor = vscode.window.activeTextEditor;
+        if (!rawEditor) {
+            return; // No open text editor
+        }
+
+        runFixImportTask(rawEditor, 'absolute');
+    });
+
+
+    const changeAllToAbsolute = vscode.commands.registerCommand('dart-import.change-all-to-absolute', async () => {
+        const excludeExt = configResolver.excludeGeneratedFiles;
+        const excludeFiles = excludeExt ? `lib/**/*.{${excludeExt}}` : null;
+        const filesUris = await vscode.workspace.findFiles('lib/**/**.dart', excludeFiles);
+
+        if (filesUris.length === 0) {
+            showInfoMessage('No dart files were found');
+            return;
+        }
+        const packageInfo = await fetchPackageInfoFor(filesUris[0]);
+
+        if (!packageInfo) {
+            showErrorMessage(
+                'Failed to initialize extension. Is this a valid Dart/Flutter project?',
+            );
+            return;
+        }
+
+        let totalCount = 0;
+        for await  (const uri of filesUris) {
+            const document = await vscode.workspace.openTextDocument(uri);
+            const rawEditor = await vscode.window.showTextDocument(document);
+            const editor = new VSCodeEditorAccess(rawEditor);
+            try {
+                const count = await fixImports(editor, packageInfo, path.sep, 'absolute');
+                vscode.commands.executeCommand('editor.action.organizeImports');
+                totalCount += count;
+            } catch (ex) {
+                if (ex instanceof Error) {
+                    showErrorMessage(ex.message);
+                } else {
+                    throw ex;
+                }
+            }
+        }
+        showInfoMessage(
+            totalCount === 0
+                ? 'Done. No lines changed'
+                : `All done. ${totalCount} lines changed.`,
+        );
+    });
+
+    context.subscriptions.push(changeToRelative, changeAllToRelative, changeToAbsolute, changeAllToAbsolute, configChanges, documentSave);
 }
