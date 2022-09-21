@@ -12,8 +12,10 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:dart-import.fix",
-        "onCommand:dart-import.fix-all"
+        "onCommand:dart-import.change-to-relative",
+        "onCommand:dart-import.change-all-to-relative",
+        "onCommand:dart-import.change-to-absolute",
+        "onCommand:dart-import.change-all-to-absolute"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -63,12 +65,20 @@
         },
         "commands": [
             {
-                "command": "dart-import.fix",
-                "title": "Fix Imports"
+                "command": "dart-import.change-to-relative",
+                "title": "Change imports to relative"
             },
             {
-                "command": "dart-import.fix-all",
-                "title": "Fix All Imports"
+                "command": "dart-import.change-all-to-relative",
+                "title": "Change all imports to relative"
+            },
+            {
+                "command": "dart-import.change-to-absolute",
+                "title": "Change imports to absolute"
+            },
+            {
+                "command": "dart-import.change-all-to-absolute",
+                "title": "Change all imports to absolute"
             }
         ]
     },
