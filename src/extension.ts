@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { PackageInfo, EditorAccess, fixImports } from './main';
+import { PackageInfo, EditorAccess, fixImports, nearestPubspec } from './main';
 import { ConfigResolver } from './configResolver';
 
 let configResolver = new ConfigResolver();
@@ -37,14 +37,14 @@ const findPubspec = async (activeFileUri: vscode.Uri) => {
 
 const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<PackageInfo | null> => {
     const pubspecUris = await findPubspec(activeDocumentUri);
-    if (pubspecUris.length !== 1) {
+    if (pubspecUris.length === 0) {
         showErrorMessage(
-            `Expected to find a single pubspec.yaml file above ${activeDocumentUri}, ${pubspecUris.length} found.`,
+            `Expected to find a pubspec.yaml file above ${activeDocumentUri}, none found.`,
         );
         return null;
     }
 
-    const pubspec: vscode.TextDocument = await vscode.workspace.openTextDocument(pubspecUris[0]);
+    const pubspec: vscode.TextDocument = await vscode.workspace.openTextDocument(nearestPubspec(pubspecUris));
     const projectRoot = path.dirname(pubspec.fileName);
     const possibleNameLines = pubspec.getText().split('\n').filter((line: string) => line.match(/^name:/));
     if (possibleNameLines.length !== 1) {
