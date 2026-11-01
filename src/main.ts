@@ -27,6 +27,12 @@ interface EditorAccess {
     replaceLineAt(idx: number, newLine: string): Thenable<boolean>;
 }
 
+// dart block comments can be nested, so we need to track how deep we are
+const updateBlockCommentDepth = (line: string, depth: number) => {
+    const delimiters = line.match(/\/\*|\*\//g) || [];
+    return delimiters.reduce((acc, delimiter) => delimiter === '/*' ? acc + 1 : Math.max(acc - 1, 0), depth);
+};
+
 const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSep: string): Promise<number> => {
     const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
     const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
@@ -38,13 +44,18 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
     const relativePath = currentPath.substring(libFolder.length + 1);
     const lineCount = editor.getLineCount();
     let count = 0;
+    let blockCommentDepth = 0;
     for (let currentLine = 0; currentLine < lineCount; currentLine++) {
         const line: string = editor.getLineAt(currentLine);
         if (line.trim().length === 0) {
             continue;
         }
         const content = line.trim();
-        if (content.startsWith('///')) {
+        if (blockCommentDepth > 0 || content.startsWith('/*')) {
+            blockCommentDepth = updateBlockCommentDepth(content, blockCommentDepth);
+            continue;
+        }
+        if (content.startsWith('//') || /^library\b/.test(content)) {
             continue;
         }
         if (!content.startsWith('import ')) {
