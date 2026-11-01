@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { PackageInfo, EditorAccess, fixImports } from './main';
+import { PackageInfo, EditorAccess, fixImports, nearestPubspec } from './main';
 import { ConfigResolver } from './configResolver';
 
 let configResolver = new ConfigResolver();
@@ -35,54 +35,16 @@ const findPubspec = async (activeFileUri: vscode.Uri) => {
     });
 };
 
-function chooseNearestPubspec(fileUri: vscode.Uri, pubspecUris: vscode.Uri[]): vscode.Uri {
-  const filePath = normalizePath(fileUri.fsPath);
-
-  const sorted = [...pubspecUris].sort((a, b) => {
-    const aDir = normalizePath(path.dirname(a.fsPath));
-    const bDir = normalizePath(path.dirname(b.fsPath));
-
-    // Prefer the deepest matching ancestor
-    return bDir.length - aDir.length;
-  });
-
-  for (const pubspecUri of sorted) {
-    const pubspecDir = normalizePath(path.dirname(pubspecUri.fsPath));
-    if (isSameOrParent(pubspecDir, filePath)) {
-      return pubspecUri;
-    }
-  }
-
-  // fallback: deepest one
-  return sorted[0];
-}
-
-function normalizePath(p: string): string {
-  return p.replace(/\\/g, '/').toLowerCase();
-}
-
-function isSameOrParent(parentDir: string, childPath: string): boolean {
-  return childPath === parentDir || childPath.startsWith(parentDir + '/');
-}
-
 const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<PackageInfo | null> => {
     const pubspecUris = await findPubspec(activeDocumentUri);
     if (pubspecUris.length === 0) {
         showErrorMessage(
-            `Expected to find at least one pubspec.yaml file above ${activeDocumentUri}, ${pubspecUris.length} found.`,
-        );
-        return null;
-    }
-    if (pubspecUris.length > 2) {
-        showErrorMessage(
-            `Expected to find at most 2 pubspec.yaml files above ${activeDocumentUri}, ${pubspecUris.length} found.`,
+            `Expected to find a pubspec.yaml file above ${activeDocumentUri}, none found.`,
         );
         return null;
     }
 
-    const pubspecUri = chooseNearestPubspec(activeDocumentUri, pubspecUris);
-
-    const pubspec: vscode.TextDocument = await vscode.workspace.openTextDocument(pubspecUri);
+    const pubspec: vscode.TextDocument = await vscode.workspace.openTextDocument(nearestPubspec(pubspecUris));
     const projectRoot = path.dirname(pubspec.fileName);
     const possibleNameLines = pubspec.getText().split('\n').filter((line: string) => line.match(/^name:/));
     if (possibleNameLines.length !== 1) {

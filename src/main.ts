@@ -20,6 +20,11 @@ const relativize = (filePath: string, importPath: string, pathSep: string) => {
     return relativeBits.join(dartSep);
 };
 
+// expects only the pubspecs above a single file, so the longest path is the deepest one
+const nearestPubspec = <T extends { path: string }>(pubspecs: T[]): T => {
+    return pubspecs.reduce((nearest, pubspec) => pubspec.path.length > nearest.path.length ? pubspec : nearest);
+};
+
 interface EditorAccess {
     getFileName(): string;
     getLineAt(idx: number): string;
@@ -86,4 +91,4 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
     return count;
 };
 
-export { PackageInfo, relativize, EditorAccess, fixImports };
+export { PackageInfo, relativize, nearestPubspec, EditorAccess, fixImports };
