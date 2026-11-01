@@ -4,7 +4,11 @@
         "target": "es6",
         "outDir": "out",
         "lib": [
-            "es6"
+            "es2018"
+        ],
+        "types": [
+            "node",
+            "mocha"
         ],
         "sourceMap": true,
         "rootDir": "src",

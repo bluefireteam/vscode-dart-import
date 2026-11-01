@@ -1,22 +1,29 @@
 name: CI
 
-on: push
+on:
+  push:
+    branches: [master]
+  pull_request:
 
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Using Node 14.3.0
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v7
+      - name: Using Node 24
+        uses: actions/setup-node@v7
         with:
-          node-version: 14.3.0
-      - run: npm install
-      - name: Run Tests
-        uses: GabrielBB/xvfb-action@v1.2
-        with:
-          run: ./cmds/ci.sh
+          node-version: 24
+      - run: npm ci
+      - name: Run Tests (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a ./cmds/ci.sh
+      - name: Run Tests (macOS, Windows)
+        if: runner.os != 'Linux'
+        shell: bash
+        run: ./cmds/ci.sh
