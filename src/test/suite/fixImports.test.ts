@@ -78,4 +78,71 @@ suite('#fixImports test', () => {
         assert.equal('import "with_dot.dart" show Foo;', editor.getLineAt(1));
         assert.equal('import "../parent.dart";', editor.getLineAt(2));
     });
+
+    const fix = async (lines: string[]) => {
+        const editor = new FakeEditor('/lib/foo/1.dart', lines);
+        const packageInfo: PackageInfo = { projectRoot: '', projectName: 'p' };
+        const count = await fixImports(editor, packageInfo, '/');
+        return { count, lines: editor.lines };
+    };
+
+    const wrongImport = 'import "package:p/foo/2.dart";';
+    const fixedImport = 'import "2.dart";';
+
+    test('skip line comments above imports', async () => {
+        for (const comment of ['// ignore_for_file: foo', '/// Library docs']) {
+            const result = await fix([comment, wrongImport]);
+            assert.equal(1, result.count);
+            assert.deepEqual([comment, fixedImport], result.lines);
+        }
+    });
+
+    test('skip a single line block comment above imports', async () => {
+        const result = await fix(['/* header */', wrongImport]);
+        assert.equal(1, result.count);
+        assert.deepEqual(['/* header */', fixedImport], result.lines);
+    });
+
+    test('skip a multi line block comment above imports', async () => {
+        const header = ['/*', ' * File: xyz.dart', ' */'];
+        const result = await fix([...header, '', wrongImport]);
+        assert.equal(1, result.count);
+        assert.deepEqual([...header, '', fixedImport], result.lines);
+    });
+
+    test('do not touch imports inside block comments', async () => {
+        const nested = ['/* outer', '/* inner */', wrongImport, '*/'];
+        const result = await fix([...nested, wrongImport]);
+        assert.equal(1, result.count);
+        assert.deepEqual([...nested, fixedImport], result.lines);
+    });
+
+    test('skip library directives above imports', async () => {
+        for (const library of ['library foo;', 'library;']) {
+            const result = await fix([library, '', wrongImport]);
+            assert.equal(1, result.count);
+            assert.deepEqual([library, '', fixedImport], result.lines);
+        }
+    });
+
+    test('keep going after comments between imports', async () => {
+        const result = await fix(['import "dart:io";', '// comment', wrongImport]);
+        assert.equal(1, result.count);
+        assert.deepEqual(['import "dart:io";', '// comment', fixedImport], result.lines);
+    });
+
+    test('do not touch commented out imports', async () => {
+        const commented = `// ${wrongImport}`;
+        const result = await fix([commented, wrongImport]);
+        assert.equal(1, result.count);
+        assert.deepEqual([commented, fixedImport], result.lines);
+    });
+
+    test('stop at the first line that is not a directive or comment', async () => {
+        for (const stop of ['part "1.g.dart";', 'class Foo {}']) {
+            const result = await fix([stop, wrongImport]);
+            assert.equal(0, result.count);
+            assert.deepEqual([stop, wrongImport], result.lines);
+        }
+    });
 });
