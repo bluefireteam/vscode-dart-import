@@ -67,6 +67,22 @@ const fetchPackageInfoFor = async (activeDocumentUri: vscode.Uri): Promise<Packa
     };
 };
 
+// documents we are saving ourselves, so the save hook doesn't fix them all over again
+const selfSavedDocuments = new Set<string>();
+
+const saveDocument = async (document: vscode.TextDocument) => {
+    if (!document.isDirty) {
+        return;
+    }
+    const key = document.uri.toString();
+    selfSavedDocuments.add(key);
+    try {
+        await document.save();
+    } finally {
+        selfSavedDocuments.delete(key);
+    }
+};
+
 const runFixImportTask = async (rawEditor: vscode.TextEditor) => {
     const packageInfo = await fetchPackageInfoFor(rawEditor.document.uri);
     if (!packageInfo) {
@@ -79,7 +95,8 @@ const runFixImportTask = async (rawEditor: vscode.TextEditor) => {
     const editor = new VSCodeEditorAccess(rawEditor);
     try {
         const count = await fixImports(editor, packageInfo, path.sep);
-        vscode.commands.executeCommand('editor.action.organizeImports');
+        await vscode.commands.executeCommand('editor.action.organizeImports');
+        await saveDocument(rawEditor.document);
         showInfoMessage(
             (count === 0 ? 'No lines changed.' : `${count} imports fixed.`) +
             ' All imports sorted.',
@@ -131,7 +148,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     const documentSave = vscode.workspace.onDidSaveTextDocument(
         async (e: vscode.TextDocument) => {
-            if (!configResolver.fixOnSave) {
+            if (!configResolver.fixOnSave || e.languageId !== 'dart' || selfSavedDocuments.has(e.uri.toString())) {
                 return;
             }
             const rawEditor = await vscode.window.showTextDocument(e);

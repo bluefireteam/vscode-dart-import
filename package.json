@@ -12,6 +12,7 @@
         "Other"
     ],
     "activationEvents": [
+        "onLanguage:dart",
         "onCommand:dart-import.fix",
         "onCommand:dart-import.fix-all"
     ],
