@@ -1,7 +1,7 @@
 # dart-import
 
-[![CI Status](https://raster.shields.io/github/workflow/status/luanpotter/vscode-dart-import/CI/master)](https://github.com/luanpotter/vscode-dart-import/actions?query=workflow%3ACI)
-[![Latest Release](https://raster.shields.io/github/v/release/luanpotter/vscode-dart-import)](https://github.com/luanpotter/vscode-dart-import/releases)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/bluefireteam/vscode-dart-import/CI.yaml?branch=master&style=flat-square)](https://github.com/bluefireteam/vscode-dart-import/actions/workflows/CI.yaml)
+[![Latest Release](https://img.shields.io/github/v/release/bluefireteam/vscode-dart-import?style=flat-square)](https://github.com/bluefireteam/vscode-dart-import/releases)
 
 A simple plugin for VSCode to change all Dart/Flutter imports to relative format.
 
