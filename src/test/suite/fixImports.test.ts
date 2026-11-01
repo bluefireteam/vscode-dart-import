@@ -145,4 +145,22 @@ suite('#fixImports test', () => {
             assert.deepEqual([stop, wrongImport], result.lines);
         }
     });
+
+    test('leave files outside of the lib folder alone', async () => {
+        const packageInfo: PackageInfo = { projectRoot: '/root', projectName: 'p' };
+        for (const file of ['/root/test/1_test.dart', '/root/bin/1.dart', '/root/lib_old/1.dart', '/root/1.dart']) {
+            const editor = new FakeEditor(file, [wrongImport]);
+            const count = await fixImports(editor, packageInfo, '/');
+            assert.equal(0, count);
+            assert.deepEqual([wrongImport], editor.lines);
+        }
+    });
+
+    test('fix files directly in the lib folder', async () => {
+        const editor = new FakeEditor('/root/lib/1.dart', ['import "package:p/2.dart";']);
+        const packageInfo: PackageInfo = { projectRoot: '/root', projectName: 'p' };
+        const count = await fixImports(editor, packageInfo, '/');
+        assert.equal(1, count);
+        assert.deepEqual(['import "2.dart";'], editor.lines);
+    });
 });

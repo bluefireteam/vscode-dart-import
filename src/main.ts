@@ -41,10 +41,8 @@ const updateBlockCommentDepth = (line: string, depth: number) => {
 const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSep: string): Promise<number> => {
     const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
     const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
-    if (!currentPath.startsWith(libFolder)) {
-        const l1 = 'Current file is not on project root or not on lib folder? File must be on $root/lib.';
-        const l2 = `Your current file path is: '${currentPath}' and the lib folder according to the pubspec.yaml file is '${libFolder}'.`;
-        throw Error(`${l1}\n${l2}`);
+    if (currentPath !== libFolder && !currentPath.startsWith(`${libFolder}${pathSep}`)) {
+        return 0; // files outside of lib, like tests, should keep their package imports
     }
     const relativePath = currentPath.substring(libFolder.length + 1);
     const lineCount = editor.getLineCount();
