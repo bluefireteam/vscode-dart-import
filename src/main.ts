@@ -20,9 +20,17 @@ const relativize = (filePath: string, importPath: string, pathSep: string) => {
     return relativeBits.join(dartSep);
 };
 
-// expects only the pubspecs above a single file, so the longest path is the deepest one
-const nearestPubspec = <T extends { path: string }>(pubspecs: T[]): T => {
-    return pubspecs.reduce((nearest, pubspec) => pubspec.path.length > nearest.path.length ? pubspec : nearest);
+const parsePackageName = (pubspec: string): string | null => {
+    const match = /^name:\s*['"]?(\w+)['"]?\s*(#.*)?$/m.exec(pubspec);
+    return match ? match[1] : null;
+};
+
+const isInLib = (filePath: string, projectRoot: string, pathSep: string) => {
+    return filePath.startsWith(`${projectRoot}${pathSep}lib${pathSep}`);
+};
+
+const isGeneratedFile = (filePath: string, generatedExtensions: string[]) => {
+    return generatedExtensions.some((extension) => filePath.endsWith(`.${extension}`));
 };
 
 interface EditorAccess {
@@ -39,11 +47,11 @@ const updateBlockCommentDepth = (line: string, depth: number) => {
 };
 
 const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSep: string): Promise<number> => {
-    const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
-    const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
-    if (currentPath !== libFolder && !currentPath.startsWith(`${libFolder}${pathSep}`)) {
+    if (!isInLib(editor.getFileName(), packageInfo.projectRoot, pathSep)) {
         return 0; // files outside of lib, like tests, should keep their package imports
     }
+    const currentPath = editor.getFileName().replace(/(\/|\\)[^/\\]*.dart$/, '');
+    const libFolder = `${packageInfo.projectRoot}${pathSep}lib`;
     const relativePath = currentPath.substring(libFolder.length + 1);
     const lineCount = editor.getLineCount();
     let count = 0;
@@ -89,4 +97,4 @@ const fixImports = async (editor: EditorAccess, packageInfo: PackageInfo, pathSe
     return count;
 };
 
-export { PackageInfo, relativize, nearestPubspec, EditorAccess, fixImports };
+export { PackageInfo, relativize, parsePackageName, isInLib, isGeneratedFile, EditorAccess, fixImports };
