@@ -9,9 +9,14 @@ Find it on the [VSCode Marketplace](https://marketplace.visualstudio.com/items?i
 
 ## Features
 
-Run the command "Fix Imports" from the Command Palette; all imports from your own package will become relative. Also, the "Organize Import" command will be called.
+Run one of these from the Command Palette, or bind them as desired. Imports from a file's own package become relative, then imports are sorted (this needs the Dart extension) and the file is saved.
 
-The only command added (so far) is "dart-import.fix"; you can bind it as desired.
+- "Fix Imports" (`dart-import.fix`) fixes the current file.
+- "Fix All Imports" (`dart-import.fix-all`) fixes every package in the workspace, with a progress notification you can cancel. Large repositories take a while, as each file goes through the Dart analyzer.
+
+Set `dartImport.fixOnSave` to also fix a file whenever you save it.
+
+Monorepos work out of the box: each file uses the nearest `pubspec.yaml` above it. Only files inside a package's `lib` folder have their imports changed. Generated files (see `dartImport.excludeGeneratedFiles`) are skipped by "Fix All Imports" and fix on save.
 
 ## Contribute
 
@@ -27,4 +32,4 @@ Then, you can run `npm test` to run the tests, make sure they are passing.
 
 To test in your machine, run `npm run package` to create a new VSIX file, and then use vscode's built in command `Extensions: Install from VSIX...` (from command palette) to load your version.
 
-In order to deploy, run `npm run deploy`. If your PAT token is expired, go to [this page](https://your_username.visualstudio.com/_usersSettings/tokens) to get a new one.
+In order to deploy, run `npm run publish`. If your PAT token is expired, go to [this page](https://your_username.visualstudio.com/_usersSettings/tokens) to get a new one.
