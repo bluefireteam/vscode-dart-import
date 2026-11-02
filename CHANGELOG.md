@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.4.0] - 2026-11-01
+- Support monorepos and Dart workspaces: each file now uses the nearest `pubspec.yaml` above it (thanks, @BIOMAS-Devel)
+- "Fix All Imports" now covers every package in the workspace, sorts and saves each file, opens no editors, and shows progress you can cancel
+- Fix on save now works without running a command first, only runs on Dart files, skips generated files and no longer changes the active editor
+- "Fix Imports" now saves the file after fixing it
+- Files outside of `lib`, such as tests, now keep their imports instead of showing an error
+- Comments and `library` directives above or between imports no longer stop imports from being fixed (thanks, @iliYF)
+- Report when imports could not be sorted
+- Updating dependencies
+
 ## [0.3.1] - 2020-10-11
 - Add config options for now showing messages and running on save
 - Standardizing `./` for relative imports
