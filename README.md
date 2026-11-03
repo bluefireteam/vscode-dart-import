@@ -1,12 +1,13 @@
 # dart-import
 
-[![CI Status](https://img.shields.io/github/actions/workflow/status/bluefireteam/vscode-dart-import/CI.yaml?branch=master&style=flat-square)](https://github.com/bluefireteam/vscode-dart-import/actions/workflows/CI.yaml)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/bluefireteam/vscode-dart-import/CI.yaml?branch=master&label=ci&style=flat-square)](https://github.com/bluefireteam/vscode-dart-import/actions/workflows/CI.yaml)
 [![Latest Release](https://img.shields.io/github/v/release/bluefireteam/vscode-dart-import?style=flat-square)](https://github.com/bluefireteam/vscode-dart-import/releases)
-[![VS Code Marketplace](https://vsmarketplacebadges.dev/version-short/luanpotter.dart-import.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=luanpotter.dart-import)
+[![VS Code Marketplace](https://vsmarketplacebadges.dev/version-short/luanpotter.dart-import.svg?label=vs%20code%20marketplace&style=flat-square&color=fe7d37)](https://marketplace.visualstudio.com/items?itemName=luanpotter.dart-import)
+[![Open VSX](https://img.shields.io/open-vsx/v/luanpotter/dart-import?label=open%20vsx&style=flat-square)](https://open-vsx.org/extension/luanpotter/dart-import)
 
 A simple plugin for VSCode to change all Dart/Flutter imports to relative format.
 
-Find it on the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=luanpotter.dart-import).
+Find it on the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=luanpotter.dart-import) or [Open VSX](https://open-vsx.org/extension/luanpotter/dart-import).
 
 ## Features
 
